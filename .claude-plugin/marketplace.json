@@ -1,0 +1,13 @@
+{
+  "name": "paidbyfacu",
+  "owner": { "name": "Facundo Barreda (@paidbyfacu)", "url": "https://paidbyfacu.com" },
+  "metadata": { "description": "Herramientas de paidbyfacu para Claude Code" },
+  "plugins": [
+    {
+      "name": "ugly-ads",
+      "source": "./",
+      "description": "Generá ugly ads con Claude: clip de fondo desde Drive + texto fijo estilo Instagram + música libre de derechos.",
+      "version": "0.1.0"
+    }
+  ]
+}

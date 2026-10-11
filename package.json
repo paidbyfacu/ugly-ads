@@ -1,0 +1,15 @@
+{
+  "name": "ugly-ads",
+  "version": "0.1.0",
+  "description": "MCP + plugin de Claude Code para generar ugly ads: video de fondo + texto fijo estilo Instagram + música libre.",
+  "type": "module",
+  "bin": { "ugly-ads": "server/index.js" },
+  "main": "server/index.js",
+  "files": ["server", "commands", "music", "skills", ".claude-plugin", ".mcp.json", "README.md", "LICENSE"],
+  "engines": { "node": ">=18.17" },
+  "license": "MIT",
+  "author": "Facundo Barreda (@paidbyfacu)",
+  "homepage": "https://paidbyfacu.com/herramientas/ugly-ads",
+  "repository": { "type": "git", "url": "git+https://github.com/matsitox/ugly-ads.git" },
+  "keywords": ["mcp", "claude", "ugly-ads", "meta-ads", "instagram", "reels", "ffmpeg"]
+}

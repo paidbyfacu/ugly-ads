@@ -1,0 +1,237 @@
+{
+ "source": "FreePD.com (Kevin MacLeod y otros) via archive.org/details/freepd",
+ "license": "Dominio público / CC0: uso comercial y en anuncios sin atribución",
+ "base_url": "https://archive.org/download/freepd/",
+ "tracks": [
+  {
+   "id": "hip-hop-b-thick-beat",
+   "title": "Hip Hop B Thick Beat",
+   "path": "Page2/Hip Hop B Thick Beat.mp3",
+   "moods": [
+    "hiphop",
+    "gym",
+    "energia"
+   ]
+  },
+  {
+   "id": "hip-hop-driver",
+   "title": "Hip Hop Driver",
+   "path": "Page2/Hip Hop Driver.mp3",
+   "moods": [
+    "hiphop",
+    "gym"
+   ]
+  },
+  {
+   "id": "hip-hop-epics",
+   "title": "Hip Hop Epics",
+   "path": "Page2/Hip Hop Epics.mp3",
+   "moods": [
+    "hiphop",
+    "epico",
+    "gym"
+   ]
+  },
+  {
+   "id": "rap-funk",
+   "title": "Rap Funk",
+   "path": "Page2/Rap Funk.mp3",
+   "moods": [
+    "hiphop",
+    "funk"
+   ]
+  },
+  {
+   "id": "rap-deep-groove",
+   "title": "Rap Deep Groove",
+   "path": "Page2/Rap Deep Groove.mp3",
+   "moods": [
+    "hiphop",
+    "groove"
+   ]
+  },
+  {
+   "id": "rap-bad-brass-groove",
+   "title": "Rap Bad Brass Groove",
+   "path": "Page2/Rap Bad Brass Groove.mp3",
+   "moods": [
+    "hiphop",
+    "funk",
+    "energia"
+   ]
+  },
+  {
+   "id": "urban-funk-a",
+   "title": "Urban Funk A",
+   "path": "Page2/Urban Funk A.mp3",
+   "moods": [
+    "funk",
+    "urbano"
+   ]
+  },
+  {
+   "id": "beat-thee",
+   "title": "Beat Thee",
+   "path": "featured/Beat Thee.mp3",
+   "moods": [
+    "hiphop",
+    "urbano"
+   ]
+  },
+  {
+   "id": "beat-one",
+   "title": "Beat One",
+   "path": "electronic/Beat One.mp3",
+   "moods": [
+    "electronica",
+    "urbano"
+   ]
+  },
+  {
+   "id": "hippety-hop",
+   "title": "Hippety Hop",
+   "path": "electronic/Hippety Hop.mp3",
+   "moods": [
+    "hiphop",
+    "alegre"
+   ]
+  },
+  {
+   "id": "energizing",
+   "title": "Energizing",
+   "path": "misc/Energizing.mp3",
+   "moods": [
+    "energia",
+    "electronica",
+    "gym"
+   ]
+  },
+  {
+   "id": "funky-energy-loop",
+   "title": "Funky Energy Loop",
+   "path": "scoring/Funky Energy Loop.mp3",
+   "moods": [
+    "funk",
+    "energia"
+   ]
+  },
+  {
+   "id": "funkeriffic",
+   "title": "Funkeriffic",
+   "path": "misc/Funkeriffic.mp3",
+   "moods": [
+    "funk",
+    "alegre"
+   ]
+  },
+  {
+   "id": "drum-n-bass-e-energy",
+   "title": "Drum n Bass E Energy",
+   "path": "Page2/Drum n Bass E Energy.mp3",
+   "moods": [
+    "electronica",
+    "energia",
+    "gym"
+   ]
+  },
+  {
+   "id": "house-d-reasonably-cool",
+   "title": "House D Reasonably Cool",
+   "path": "Page2/House D Reasonably Cool.mp3",
+   "moods": [
+    "electronica",
+    "house"
+   ]
+  },
+  {
+   "id": "electronic-i-crazy-fun",
+   "title": "Electronic I Crazy Fun",
+   "path": "Page2/Electronic I Crazy Fun.mp3",
+   "moods": [
+    "electronica",
+    "alegre"
+   ]
+  },
+  {
+   "id": "run",
+   "title": "Run!",
+   "path": "Page2/Run!.mp3",
+   "moods": [
+    "epico",
+    "energia",
+    "gym"
+   ]
+  },
+  {
+   "id": "mothership",
+   "title": "Mothership",
+   "path": "epic/Mothership.mp3",
+   "moods": [
+    "epico"
+   ]
+  },
+  {
+   "id": "advertime",
+   "title": "Advertime",
+   "path": "upbeat/Advertime.mp3",
+   "moods": [
+    "alegre",
+    "publicidad"
+   ]
+  },
+  {
+   "id": "inspiration",
+   "title": "Inspiration",
+   "path": "upbeat/Inspiration.mp3",
+   "moods": [
+    "alegre",
+    "motivacional"
+   ]
+  },
+  {
+   "id": "city-sunshine",
+   "title": "City Sunshine",
+   "path": "upbeat/City Sunshine.mp3",
+   "moods": [
+    "alegre",
+    "urbano"
+   ]
+  },
+  {
+   "id": "motions",
+   "title": "Motions",
+   "path": "upbeat/Motions.mp3",
+   "moods": [
+    "alegre",
+    "publicidad"
+   ]
+  },
+  {
+   "id": "feel-good-feel",
+   "title": "Feel Good Feel",
+   "path": "Page2/Feel Good Feel.mp3",
+   "moods": [
+    "alegre",
+    "motivacional"
+   ]
+  },
+  {
+   "id": "chill-urban",
+   "title": "Chill Urban",
+   "path": "Page2/Chill Urban.mp3",
+   "moods": [
+    "chill",
+    "urbano"
+   ]
+  },
+  {
+   "id": "electro-chill-a",
+   "title": "Electro Chill A",
+   "path": "Page2/Electro Chill A.mp3",
+   "moods": [
+    "chill",
+    "electronica"
+   ]
+  }
+ ]
+}
