@@ -78,7 +78,13 @@ async function handle(req) {
 }
 
 const rl = readline.createInterface({ input: process.stdin });
-rl.on("line", async (line) => {
+const pending = new Set();
+rl.on("line", (line) => {
+  const p = onLine(line);
+  pending.add(p);
+  p.finally(() => pending.delete(p));
+});
+async function onLine(line) {
   if (!line.trim()) return;
   let req;
   try { req = JSON.parse(line); } catch { return send({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } }); }
@@ -88,6 +94,7 @@ rl.on("line", async (line) => {
   } catch (e) {
     send({ jsonrpc: "2.0", id: req.id, error: { code: e.code || -32603, message: e.message || String(e) } });
   }
-});
-rl.on("close", () => process.exit(0));
+}
+// Al cerrarse stdin, terminar las respuestas en curso antes de salir.
+rl.on("close", async () => { await Promise.allSettled([...pending]); process.exit(0); });
 process.on("uncaughtException", (e) => process.stderr.write(`[ugly-ads] ${e.stack || e}\n`));
