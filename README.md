@@ -7,7 +7,13 @@ Claude se encarga de todo el proceso: lee el contexto (el chat, tu memoria y los
 copy, elige el clip que mejor acompaña el mensaje, ubica el texto donde no tapa la acción ni la UI de Instagram,
 te muestra un preview y renderiza el MP4 final en 1080×1920.
 
-→ Guía completa: https://paidbyfacu.com/herramientas/ugly-ads
+→ Guía completa: https://paidbyfacu.com/ugly-ads-generator
+
+## Sin API key
+
+No usa API key de Anthropic: todo lo que piensa (copy, elección del clip, ubicación del texto) lo hace tu propio
+Claude con tu cuenta (Pro/Max en Claude Code, o cualquier plan con MCPs locales en Claude Desktop). El video se
+arma en tu compu con ffmpeg: no hay servidores ni créditos de por medio.
 
 ## Requisitos
 

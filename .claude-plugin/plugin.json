@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Generá ugly ads con Claude: clip de fondo desde Drive + texto fijo estilo Instagram + música libre de derechos.",
   "author": { "name": "Facundo Barreda (@paidbyfacu)", "url": "https://paidbyfacu.com" },
-  "homepage": "https://paidbyfacu.com/herramientas/ugly-ads",
+  "homepage": "https://paidbyfacu.com/ugly-ads-generator",
   "repository": "https://github.com/matsitox/ugly-ads",
   "license": "MIT",
   "keywords": ["ugly-ads", "meta-ads", "instagram", "reels", "video"]
