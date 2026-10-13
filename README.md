@@ -26,7 +26,7 @@ arma en tu compu con ffmpeg: no hay servidores ni créditos de por medio.
 ### Claude Code (recomendado: trae los comandos `/`)
 
 ```
-/plugin marketplace add matsitox/ugly-ads
+/plugin marketplace add paidbyfacu/ugly-ads
 /plugin install ugly-ads@paidbyfacu
 ```
 
@@ -41,19 +41,19 @@ Settings → Developer → Edit Config, y sumá:
   "mcpServers": {
     "ugly-ads": {
       "command": "npx",
-      "args": ["-y", "github:matsitox/ugly-ads"]
+      "args": ["-y", "github:paidbyfacu/ugly-ads"]
     }
   }
 }
 ```
 
-En Windows, si no arranca, usá `"command": "cmd"` y `"args": ["/c", "npx", "-y", "github:matsitox/ugly-ads"]`.
+En Windows, si no arranca, usá `"command": "cmd"` y `"args": ["/c", "npx", "-y", "github:paidbyfacu/ugly-ads"]`.
 Los comandos aparecen en el botón **+ → Ugly Ads**.
 
 ### Claude Code solo con el MCP (sin plugin)
 
 ```
-claude mcp add ugly-ads -- npx -y github:matsitox/ugly-ads
+claude mcp add ugly-ads -- npx -y github:paidbyfacu/ugly-ads
 ```
 
 ## Comandos

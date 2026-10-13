@@ -10,6 +10,6 @@
   "license": "MIT",
   "author": "Facundo Barreda (@paidbyfacu)",
   "homepage": "https://paidbyfacu.com/ugly-ads-generator",
-  "repository": { "type": "git", "url": "git+https://github.com/matsitox/ugly-ads.git" },
+  "repository": { "type": "git", "url": "git+https://github.com/paidbyfacu/ugly-ads.git" },
   "keywords": ["mcp", "claude", "ugly-ads", "meta-ads", "instagram", "reels", "ffmpeg"]
 }
