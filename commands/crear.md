@@ -17,10 +17,15 @@ Seguí este proceso sin saltear pasos:
 4. **Footage.** Si no hay link de Drive o carpeta en el pedido ni guardado (`ugly_last` muestra la última
    fuente), pedilo. Llamá a `ugly_footage`, mirá la hoja de miniaturas y elegí los 1-3 clips que mejor
    acompañen el mensaje. Explicá en una línea por qué.
-5. **Ubicación.** `ugly_inspect` sobre el mejor candidato. Decidí `position`, `start` y `dim` según las franjas
-   menos cargadas, sin tapar caras ni la acción y fuera de las zonas rojas.
-6. **Preview.** `ugly_preview` con el spec completo. Revisá la imagen con ojo crítico (legibilidad en 2 s, nada
-   tapado, nada en zona roja, líneas parejas) y corregí antes de mostrarlo. Mostrale el preview al usuario.
-7. **Render.** Con el OK (o directo si el usuario pidió no frenar), `ugly_render` con música aleatoria del mood
+5. **Corte (obligatorio, antes de armar nada).** `ugly_scan` sobre el clip elegido con `target` = duración del
+   ad (8-15 s). Mirá la hoja de fotogramas y elegí desde qué segundo hasta cuál se ve lo interesante (la acción,
+   el ejercicio, el producto en uso), salteando la previa y el final. Contale al usuario el corte en una línea
+   ("uso del 0:07 al 0:19, cuando hace la sentadilla"). Ese tramo va como `start` / `end` en el spec.
+6. **Ubicación.** `ugly_inspect` sobre el tramo cortado (`start` y `length`). Decidí `position` según las franjas
+   menos cargadas, sin tapar caras ni la acción y fuera de las zonas rojas. Dejá la sombra suave por default
+   (`shade` 0.32); subila a 0.4-0.5 solo si el fondo es muy claro o cargado.
+7. **Preview.** `ugly_preview` con el spec completo. Revisá la imagen con ojo crítico (legibilidad en 2 s, nada
+   tapado, nada en zona roja, líneas parejas) y corregí antes de mostrarlo. Mostrale el preview al usuario con el corte elegido.
+8. **Render.** Con el OK (o directo si el usuario pidió no frenar), `ugly_render` con música aleatoria del mood
    que encaje. Al terminar, pasá la ruta del MP4, el tema que sonó y recordá los comandos para cambios:
    `/ugly-ads:texto`, `/ugly-ads:video`, `/ugly-ads:musica`, `/ugly-ads:estilo`, `/ugly-ads:variantes`.

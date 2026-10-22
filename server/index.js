@@ -27,7 +27,7 @@ const PROMPTS = loadPrompts();
 
 const INSTRUCTIONS =
   "Ugly Ads genera videos verticales con texto fijo estilo Instagram sobre un clip de fondo y música. " +
-  "Flujo: contexto → copy aprobado por el usuario → ugly_footage → ugly_inspect → ugly_preview → ugly_render. " +
+  "Flujo: contexto → copy aprobado por el usuario → ugly_footage → ugly_scan (corte: start/end donde está la acción) → ugly_inspect → ugly_preview → ugly_render. " +
   "Leé ugly_guide antes del primer ugly ad de la sesión.";
 
 function send(msg) {

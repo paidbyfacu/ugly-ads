@@ -3,7 +3,7 @@ import fsp from "node:fs/promises";
 import path from "node:path";
 import { CACHE_DIR, download, exists, fetchText, escapeHtml, fileUrl, tmpFile, runOk, normPath } from "./util.js";
 import { requireDeps } from "./deps.js";
-import { probe, frameAt } from "./video.js";
+import { probe, frameAt, scanClip } from "./video.js";
 import { screenshot } from "./chrome.js";
 
 const VIDEO_EXT = /\.(mp4|mov|m4v|webm|mkv|avi|mts)$/i;
@@ -199,4 +199,38 @@ p{position:absolute;right:6px;top:4px;margin:0;background:rgba(0,0,0,.6);padding
   for (const s of shots) fsp.unlink(s.f).catch(() => {});
   fsp.unlink(png).catch(() => {});
   return jpg;
+}
+
+const mmss = (t) => `${Math.floor(t / 60)}:${(t % 60).toFixed(1).padStart(4, "0")}`;
+
+/**
+ * Línea de tiempo de TODO el clip: fotogramas con su segundo y una barra de actividad,
+ * para decidir desde dónde hasta dónde cortar (dónde está la acción).
+ */
+export async function timelineSheet(file, info, { format = "9:16", target = 12 } = {}) {
+  const { ffmpeg } = await requireDeps("ffmpeg");
+  const n = Math.max(8, Math.min(24, Math.round(info.duration / 1.5)));
+  const tw = 180, th = format === "9:16" ? 320 : format === "4:5" ? 225 : 180;
+  const prefix = tmpFile("jpg").replace(/\.jpg$/, "-");
+  const act = await scanClip(file, info, { length: target, n, prefix, W: tw, H: th });
+  const frames = act.frames;
+  const cols = Math.min(8, n);
+  const actAt = (t) => act?.porSegundo?.[Math.min(act.porSegundo.length - 1, Math.floor(t))] ?? 0;
+  const cells = frames.map((f) => `<div class="c"><div class="t"><img src="${fileUrl(f.file)}"><b>${mmss(f.t)}</b></div><div class="bar"><i></i></div></div>`).join("");
+  const bars = frames.map((f, i) => `.c:nth-child(${i + 1}) .bar i{width:${actAt(f.t)}%}`).join("");
+  const W = cols * (tw + 10) + 10, H = Math.ceil(n / cols) * (th + 26) + 14;
+  const html = `<!doctype html><meta charset="utf-8"><style>body{margin:0;background:#111;font:700 15px system-ui;color:#fff}
+.g{display:grid;grid-template-columns:repeat(${cols},${tw}px);gap:10px;padding:10px}
+.t{position:relative;width:${tw}px;height:${th}px;border-radius:8px;overflow:hidden;background:#222}
+.t img{width:100%;height:100%;object-fit:cover}
+b{position:absolute;left:6px;top:6px;background:rgba(0,0,0,.72);padding:2px 8px;border-radius:6px}
+.bar{height:10px;margin-top:6px;border-radius:5px;background:#2a2a2a;overflow:hidden}
+.bar i{display:block;height:100%;background:#ff3d7f}${bars}</style><div class="g">${cells}</div>`;
+  const png = tmpFile("png");
+  await screenshot(html, png, W, H, { transparent: false });
+  const jpg = tmpFile("jpg");
+  await runOk(ffmpeg, ["-v", "error", "-y", "-i", png, "-q:v", "4", jpg]);
+  for (const f of frames) fsp.unlink(f.file).catch(() => {});
+  fsp.unlink(png).catch(() => {});
+  return { file: jpg, act };
 }

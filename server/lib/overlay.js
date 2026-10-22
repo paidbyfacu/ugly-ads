@@ -67,7 +67,9 @@ export function normalizeSpec(input) {
   s.emoji_style = s.emoji_style === "twemoji" ? "twemoji" : "apple";
   s.align = ["left", "center", "right"].includes(s.align) ? s.align : "center";
   s.text_scale = clamp(Number(s.text_scale) || 1, 0.5, 2);
-  s.dim = s.dim === undefined ? 0.2 : clamp(Number(s.dim) || 0, 0, 0.85);
+  s.dim = s.dim === undefined ? 0.12 : clamp(Number(s.dim) || 0, 0, 0.85);
+  // Sombra suave detrás del bloque de texto (franja negra con bordes difuminados), así el texto no "flota" sobre el video.
+  s.shade = s.shade === undefined ? 0.32 : clamp(Number(s.shade) || 0, 0, 0.8);
   if (s.position === undefined) s.position = "center";
   if (typeof s.position === "number") s.position = clamp(s.position, 0, 1);
   else if (!["top", "center", "bottom"].includes(s.position)) {
@@ -140,7 +142,7 @@ export async function buildOverlayHtml(spec, { guides = false } = {}) {
   const emojis = await resolveEmojis(spec.blocks.map((b) => b.text).join("\n"), spec.emoji_style);
   const css = await fontCss();
   const side = Math.round(z.side * W);
-  const cfg = { W, H, top: Math.round(z.top * H), bottom: Math.round(z.bottom * H), pos: spec.position, base: +(W * 0.048 * spec.text_scale).toFixed(2) };
+  const cfg = { W, H, top: Math.round(z.top * H), bottom: Math.round(z.bottom * H), pos: spec.position, shade: spec.shade, base: +(W * 0.048 * spec.text_scale).toFixed(2) };
   const align = spec.align;
   return `<!doctype html><html><head><meta charset="utf-8"><style>
 ${css}
@@ -159,9 +161,11 @@ body{font-family:${FONT_STACKS[spec.font]};-webkit-font-smoothing:antialiased;te
 .emj{height:1.1em;width:auto;vertical-align:-0.22em;margin:0 .05em}
 .guide{position:absolute;background:rgba(255,40,40,.22);border:3px dashed rgba(255,80,80,.9);box-sizing:border-box;color:#fff;font:600 26px system-ui;display:flex;align-items:center;justify-content:center}
 #metrics{display:none}
+#shade{position:absolute;left:0;right:0;top:0;height:0;pointer-events:none}
 </style></head><body>
 ${guides ? `<div class="guide" style="left:0;top:0;width:${W}px;height:${cfg.top}px">zona UI arriba</div>
 <div class="guide" style="left:0;bottom:0;width:${W}px;height:${cfg.bottom}px">zona UI abajo (caption / CTA)</div>` : ""}
+<div id="shade"></div>
 <div id="stage">
 ${spec.blocks.map((b) => blockHtml(b, emojis)).join("\n")}
 </div>
@@ -192,6 +196,13 @@ ${spec.blocks.map((b) => blockHtml(b, emojis)).join("\n")}
   const cy = C.pos === 'top' ? C.top + hh / 2 : C.pos === 'bottom' ? C.H - C.bottom - hh / 2 : C.pos === 'center' ? C.top + avail / 2 : C.pos * C.H;
   const y = Math.min(Math.max(cy - hh / 2, C.top), C.H - C.bottom - hh);
   st.style.transform = 'translateY(' + y + 'px)';
+  if (C.shade > 0) {
+    const pad = Math.max(170, hh * 0.3), tot = hh + 2 * pad, e = (100 * pad / tot).toFixed(1), a = 'rgba(0,0,0,' + C.shade + ')';
+    const sh = document.getElementById('shade');
+    sh.style.top = (y - pad) + 'px';
+    sh.style.height = tot + 'px';
+    sh.style.background = 'linear-gradient(to bottom, rgba(0,0,0,0) 0%, ' + a + ' ' + e + '%, ' + a + ' ' + (100 - e) + '%, rgba(0,0,0,0) 100%)';
+  }
   const blocks = [...st.children].map((el, i) => {
     const inner = el.firstElementChild || el;
     const r = inner.getBoundingClientRect();

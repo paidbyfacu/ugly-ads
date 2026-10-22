@@ -4,7 +4,7 @@ Generá **ugly ads** con tu propio Claude: un clip de fondo (de tu carpeta de Go
 con las burbujas de Instagram/Edits y música libre de derechos. Sin abrir Edits ni CapCut.
 
 Claude se encarga de todo el proceso: lee el contexto (el chat, tu memoria y los docs del proyecto), te propone el
-copy, elige el clip que mejor acompaña el mensaje, ubica el texto donde no tapa la acción ni la UI de Instagram,
+copy, elige el clip que mejor acompaña el mensaje, lo corta en el momento de la acción, ubica el texto donde no tapa la acción ni la UI de Instagram,
 te muestra un preview y renderiza el MP4 final en 1080×1920.
 
 → Guía completa: https://paidbyfacu.com/ugly-ads-generator
@@ -62,7 +62,8 @@ claude mcp add ugly-ads -- npx -y github:paidbyfacu/ugly-ads
 |---|---|
 | `/ugly-ads:crear [promo + link de Drive]` | Todo el flujo: contexto → copy → clip → ubicación → preview → render |
 | `/ugly-ads:texto [cambio]` | Cambia el copy del último ugly ad |
-| `/ugly-ads:video [nº, criterio o link]` | Cambia el clip de fondo y reubica el texto |
+| `/ugly-ads:video [nº, criterio o link]` | Cambia el clip de fondo, elige el corte y reubica el texto |
+| `/ugly-ads:corte [momento o segundos]` | Cambia el tramo del video de fondo ("que arranque cuando levanta la pesa") |
 | `/ugly-ads:musica [mood, tema o vacío]` | Otro tema (aleatorio, por mood o puntual) |
 | `/ugly-ads:estilo [cambio]` | Colores, fuente, tamaño, posición |
 | `/ugly-ads:variantes [n]` | Versiones para test A/B |
@@ -104,6 +105,19 @@ MCP por stdio sin dependencias de npm. La capa de texto se arma en HTML/CSS (bur
 recorta el clip a 9:16, lo oscurece un poco, superpone la capa y mezcla la música. Para elegir dónde va el texto,
 el MCP le pasa a Claude una tira de fotogramas con las zonas de UI marcadas y un análisis de movimiento y detalle
 por franja.
+
+## Actualizar
+
+- **Claude Code:** `/plugin marketplace update paidbyfacu` y reiniciá Claude Code. Para que se actualice solo,
+  activá la actualización automática del marketplace en `/plugin` → Marketplaces → paidbyfacu.
+- **Claude Desktop:** cerrá Claude del todo y volvé a abrirlo (npx baja la última versión de GitHub).
+
+## Cambios
+
+- **0.2.0** · Paso de corte obligatorio (`ugly_scan`: línea de tiempo + actividad para cortar donde pasa la
+  acción, `start`/`end` en el spec, comando `/ugly-ads:corte`). Sombra suave detrás del texto (`shade`) y
+  oscurecido general más leve. Los clips HDR de iPhone se convierten a SDR (antes salían con colores lavados).
+- **0.1.0** · Primera versión.
 
 ## Licencia
 

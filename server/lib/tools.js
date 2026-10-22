@@ -6,8 +6,8 @@ import { fileURLToPath } from "node:url";
 import { WORK_DIR, ensureDirs, tmpFile, exists, slug, clamp, normPath } from "./util.js";
 import { findDeps, installHints } from "./deps.js";
 import { normalizeSpec, renderOverlay, PALETTE, SAFE_ZONES, FORMATS } from "./overlay.js";
-import { probe, analyzeBands, previewFrame, renderVideo } from "./video.js";
-import { listFootage, contactSheet, ensureLocal, clipStrip, parseDrive } from "./footage.js";
+import { probeCached as probe, analyzeBands, previewFrame, renderVideo } from "./video.js";
+import { listFootage, contactSheet, ensureLocal, clipStrip, parseDrive, timelineSheet } from "./footage.js";
 import { listTracks, pickTrack, ensureTrack, MUSIC_INFO } from "./music.js";
 import { getState, saveState } from "./state.js";
 import { fontCss } from "./fonts.js";
@@ -50,8 +50,20 @@ async function clipReady(ref) {
 
 function timing(spec, info) {
   const start = clamp(Number(spec.start) || 0, 0, Math.max(0, info.duration - 0.5));
-  const want = Number(spec.duration) || clamp(info.duration - start, 6, 15);
+  const end = Number(spec.end);
+  const want = Number.isFinite(end) && end > start ? end - start : Number(spec.duration) || clamp(info.duration - start, 6, 15);
   return { start, duration: clamp(want, 2, 60) };
+}
+
+const mmss = (t) => `${Math.floor(t / 60)}:${(t % 60).toFixed(1).padStart(4, "0")}`;
+const cutLabel = (start, duration) => `${mmss(start)} → ${mmss(start + duration)} (${duration.toFixed(1)} s)`;
+
+/** Avisa si el clip es largo y nadie decidió el corte (el fondo tiene que mostrar la acción, no la previa). */
+function cutWarnings(raw, info) {
+  const w = [];
+  if (info.duration > 16 && raw.start === undefined) w.push(`El clip dura ${Math.round(info.duration)} s y no definiste el corte: corré ugly_scan y fijá start/end en el momento de la acción.`);
+  if (info.hdr) w.push("Clip HDR (iPhone): se convierte a SDR para que los colores no se laven.");
+  return w;
 }
 
 function outputPath(spec, name) {
@@ -71,8 +83,10 @@ const SPEC_SCHEMA = {
   description: "Spec del ugly ad. Ver ugly_guide para todos los campos y ejemplos.",
   properties: {
     clip: { description: "Número de clip de ugly_footage, link/ID de Drive o ruta local." },
-    start: { type: "number", description: "Segundo del clip donde arranca (default 0)." },
+    start: { type: "number", description: "Segundo del clip donde arranca el corte (elegilo con ugly_scan: donde empieza la acción)." },
+    end: { type: "number", description: "Segundo del clip donde termina el corte. Alternativa a duration." },
     duration: { type: "number", description: "Duración final en segundos (default: largo del clip, entre 6 y 15). Si el clip es más corto, se repite en loop." },
+    shade: { type: "number", description: "Sombra suave detrás del bloque de texto 0-0.8 (default 0.32). Separa el texto del video sin apagarlo." },
     format: { type: "string", enum: Object.keys(FORMATS), description: "Default 9:16 (Reels/Stories)." },
     safe_zone: { type: "string", enum: Object.keys(SAFE_ZONES), description: "Zonas que tapa la UI. Default reels." },
     position: { description: "top | center | bottom | número 0-1 (centro vertical del bloque de texto)." },
@@ -80,7 +94,7 @@ const SPEC_SCHEMA = {
     font: { type: "string", enum: ["instagram", "poppins"], description: "instagram = Instagram Sans si está instalada, si no Figtree." },
     text_scale: { type: "number", description: "Multiplicador del tamaño de todo el texto (default 1)." },
     gap: { type: "number", description: "Espacio entre bloques en múltiplos del tamaño base (default 0.55)." },
-    dim: { type: "number", description: "Oscurecido del video 0-0.85 (default 0.2)." },
+    dim: { type: "number", description: "Oscurecido parejo de todo el video 0-0.85 (default 0.12). Para separar el texto preferí shade." },
     emoji_style: { type: "string", enum: ["apple", "twemoji"] },
     blocks: {
       type: "array",
@@ -139,8 +153,21 @@ export const TOOLS = [
     },
   },
   {
+    name: "ugly_scan",
+    description: "PASO DE CORTE (obligatorio antes de armar el ugly ad). Recorre TODO el clip: devuelve una hoja con fotogramas cada ~1,5 s con su tiempo y una barra de actividad, más los tramos con más movimiento del largo pedido. Usalo para decidir desde qué segundo hasta cuál cortar, así de fondo se ve lo interesante (el ejercicio, la acción) y no la previa. Después pasá start/end al spec.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        clip: { description: "Número de clip, link/ID de Drive o ruta." },
+        target: { type: "number", description: "Duración deseada del ugly ad en segundos (default 12)." },
+        format: { type: "string", enum: Object.keys(FORMATS) },
+      },
+      required: ["clip"],
+    },
+  },
+  {
     name: "ugly_inspect",
-    description: "Analiza un clip: lo descarga si es de Drive, devuelve duración/orientación, una tira de fotogramas con las zonas de UI en rojo y líneas cada 10%, y qué franjas tienen menos movimiento/detalle. Usalo para decidir `position`, `start` y si el texto tapa caras o la acción.",
+    description: "Analiza el TRAMO YA CORTADO de un clip (pasale start y length del corte elegido con ugly_scan): lo descarga si es de Drive, devuelve duración/orientación, una tira de fotogramas con las zonas de UI en rojo y líneas cada 10%, y qué franjas tienen menos movimiento/detalle. Usalo para decidir `position`, `start` y si el texto tapa caras o la acción.",
     inputSchema: {
       type: "object",
       properties: {
@@ -225,6 +252,25 @@ const handlers = {
     ];
   },
 
+  async ugly_scan({ clip, target = 12, format = "9:16" }) {
+    const { clip: c, file, info } = await clipReady(clip);
+    const { file: sheet, act } = await timelineSheet(file, info, { format, target });
+    const per = act.porSegundo;
+    const filas = [];
+    for (let s0 = 0; s0 < per.length; s0 += 10) filas.push(`${mmss(s0)}-${mmss(Math.min(per.length, s0 + 10))}: ${per.slice(s0, s0 + 10).join(" ")}`);
+    return [
+      text({
+        clip: c.n ? `#${c.n} ${c.name}` : c.name,
+        duracion_s: +info.duration.toFixed(2),
+        hdr: info.hdr,
+        actividad_por_segundo: filas,
+        tramos_con_mas_movimiento: act.ventanas,
+        como_decidir: "Mirá la hoja: elegí el tramo donde se ve la acción que acompaña el mensaje (el ejercicio, el movimiento, el producto en uso), no la preparación ni el final. El tramo con más movimiento es una pista, no la respuesta: confirmalo con los fotogramas. Si el clip es más corto que el ad, se repite en loop. Después: ugly_inspect con start y length del corte.",
+      }),
+      await image(sheet),
+    ];
+  },
+
   async ugly_inspect({ clip, start = 0, length, format = "9:16", safe_zone }) {
     const { clip: c, file, info } = await clipReady(clip);
     const zoneKey = SAFE_ZONES[safe_zone] ? safe_zone : format === "9:16" ? "reels" : "feed";
@@ -245,7 +291,8 @@ const handlers = {
     const { start, duration } = timing(spec, info);
     const ov = tmpFile("png");
     const r = await renderOverlay(spec, ov, { guides });
-    const t = spec.preview_at !== undefined ? Number(spec.preview_at) : start + Math.min(duration, info.duration - start) * 0.4;
+    const t = spec.preview_at !== undefined ? Number(spec.preview_at) : start + Math.min(duration, info.duration - start) * 0.5;
+    warnings.push(...cutWarnings(raw, info));
     const out = tmpFile("jpg");
     await previewFrame({ clip: file, t, overlay: ov, dim: spec.dim, format: spec.format, out });
     fsp.unlink(ov).catch(() => {});
@@ -254,7 +301,7 @@ const handlers = {
     if (r.metrics && !r.metrics.fonts.some((f) => /Instagram|Figtree|Poppins/.test(f))) warnings.push("No cargaron las fuentes (¿sin internet?): se usó la del sistema.");
     saveState({ draft: { ...raw, clip: stableRef(clip), clip_name: clip.name } });
     return [
-      text({ advertencias: warnings, layout: r.metrics && { top_px: r.metrics.top, bottom_px: r.metrics.bottom, alto_px: r.metrics.height, escala: r.metrics.scale, lineas_por_bloque: r.metrics.blocks.map((b) => b.lines) }, tramo: { start, duration }, nota: "Las franjas rojas son la UI de Instagram: no van en el video final." }),
+      text({ advertencias: warnings, layout: r.metrics && { top_px: r.metrics.top, bottom_px: r.metrics.bottom, alto_px: r.metrics.height, escala: r.metrics.scale, lineas_por_bloque: r.metrics.blocks.map((b) => b.lines) }, corte: cutLabel(start, duration), nota: "Las franjas rojas son la UI de Instagram: no van en el video final." }),
       await image(out),
     ];
   },
@@ -268,6 +315,7 @@ const handlers = {
     const { spec, warnings } = normalizeSpec(raw);
     const { clip, file, info } = await clipReady(spec.clip);
     const { start, duration } = timing(spec, info);
+    warnings.push(...cutWarnings(raw, info));
     const m = spec.music || {};
     let track = null;
     if (m.track !== "none") {
@@ -292,6 +340,7 @@ const handlers = {
       text({
         video: out,
         duracion_s: duration,
+        corte: cutLabel(start, duration),
         clip: clip.n ? `#${clip.n} ${clip.name}` : clip.name,
         musica: track ? `${track.title} (${track.id}) desde ${musicCfg.start}s` : "sin música",
         advertencias: warnings,

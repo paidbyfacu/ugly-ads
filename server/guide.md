@@ -14,14 +14,20 @@ pieza de agencia. El texto se lee de un vistazo y el video da contexto sin compe
 3. **Footage.** `ugly_footage` con el link de Drive (o la carpeta). Elegí 1-3 candidatos que acompañen el mensaje:
    la acción del clip tiene que tener que ver con lo que se dice (curso de entrenador → alguien entrenando o
    enseñando; nutrición → comida/cocina; calistenia → barras/parque). Preferí clips verticales y con espacio libre.
-4. **Ubicación.** `ugly_inspect` sobre el elegido. Ubicá el bloque de texto donde haya menos movimiento y
+4. **Corte (obligatorio).** `ugly_scan` sobre el clip elegido, con `target` = duración del ad. Los videos de
+   stock o de gym suelen tener una previa larga hasta que pasa la acción (alguien que se acomoda antes de
+   levantar la pesa). Mirá la hoja de fotogramas y elegí **desde qué segundo hasta cuál** se ve lo interesante:
+   el ejercicio, el movimiento, el producto en uso. Ese tramo va en el spec como `start` y `end`, y define cuánto
+   dura el ad. El tramo con más movimiento que sugiere la herramienta es una pista, no la respuesta. Decile al
+   usuario el corte elegido ("uso del 0:07 al 0:19, que es cuando hace la sentadilla").
+5. **Ubicación.** `ugly_inspect` sobre el tramo cortado (`start` y `length`). Ubicá el bloque de texto donde haya menos movimiento y
    detalle, sin tapar caras ni la acción principal y fuera de las franjas rojas (UI de Instagram). Las franjas
    con `cargado` bajo son las mejores. Si el sujeto está abajo, texto arriba (`position` 0.3-0.4) y viceversa.
-5. **Preview.** `ugly_preview` y mirá la imagen con ojo crítico: ¿se lee todo en 2 segundos? ¿tapa la cara?
+6. **Preview.** `ugly_preview` y mirá la imagen con ojo crítico: ¿se lee todo en 2 segundos? ¿tapa la cara?
    ¿queda algo en rojo? ¿hay líneas huérfanas de 1 palabra? Ajustá y repetí. Mostrale el preview al usuario.
-6. **Render.** `ugly_render`. La música sale aleatoria del mood que encaje (gym/energía por default) salvo que el
+7. **Render.** `ugly_render`. La música sale aleatoria del mood que encaje (gym/energía por default) salvo que el
    usuario pida otra.
-7. **Cambios.** Para iterar usá `ugly_last` y modificá solo lo pedido (texto, clip, estilo o música).
+8. **Cambios.** Para iterar usá `ugly_last` y modificá solo lo pedido (texto, clip, estilo o música).
 
 ## Estructura del copy
 
@@ -61,7 +67,11 @@ Paleta de Instagram disponible por nombre: `white`, `black`, `magenta` (#D10869)
 
 - Alterná fondos: blanco → color marca → blanco → negro. Máximo **2 colores fuertes** además de blanco y negro.
 - Texto blanco sobre colores oscuros/saturados, negro sobre blanco y amarillo.
-- `dim` (oscurecido del video): 0.15-0.25 si el clip es oscuro, 0.3-0.4 si es claro o muy cargado.
+- **Separación texto / video:** por default hay una sombra suave detrás del bloque de texto (`shade`: 0.32) y un
+  oscurecido parejo muy leve de todo el video (`dim`: 0.12). Así el texto no queda "pegado" encima del video y
+  el fondo se sigue viendo. Si el clip es muy claro o cargado, subí `shade` a 0.4-0.5 antes que `dim`. Nunca
+  apagues el video: tiene que verse.
+- Los clips HDR de iPhone se convierten solos a SDR para que los colores no se laven.
 
 ## Zonas seguras
 
@@ -77,8 +87,9 @@ caso recortá copy en lugar de aceptar letra chica.
   "start": 0,
   "duration": 12,
   "format": "9:16",
+  "end": 12,
   "position": "center",
-  "dim": 0.2,
+  "shade": 0.32,
   "font": "instagram",
   "blocks": [
     { "style": "title", "text": "Instructorado de\n**Calistenia** [2026]" },
@@ -93,7 +104,8 @@ caso recortá copy en lugar de aceptar letra chica.
 ```
 
 - `clip`: número de la hoja de `ugly_footage`, link/ID de Drive o ruta local.
-- `duration`: entre 8 y 15 s funciona bien. Si el clip es más corto se repite en loop.
+- `start` / `end`: el corte elegido con `ugly_scan` (segundos del clip original). Entre 8 y 15 s funciona bien.
+  También se puede usar `duration` en lugar de `end`. Si el clip es más corto, se repite en loop.
 - `font`: `instagram` (Instagram Sans si está instalada en la compu, si no Figtree) o `poppins`.
 - `music.track`: `random`, un id de `ugly_music`, la ruta a un mp3 o `none`. `original_audio` mezcla el sonido
   del clip (0-1).

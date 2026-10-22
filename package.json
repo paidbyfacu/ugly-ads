@@ -1,6 +1,6 @@
 {
   "name": "ugly-ads",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP + plugin de Claude Code para generar ugly ads: video de fondo + texto fijo estilo Instagram + música libre.",
   "type": "module",
   "bin": { "ugly-ads": "server/index.js" },

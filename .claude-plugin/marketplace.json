@@ -7,7 +7,7 @@
       "name": "ugly-ads",
       "source": "./",
       "description": "Generá ugly ads con Claude: clip de fondo desde Drive + texto fijo estilo Instagram + música libre de derechos.",
-      "version": "0.1.0"
+      "version": "0.2.0"
     }
   ]
 }

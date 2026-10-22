@@ -4,7 +4,8 @@ description: Crear o editar ugly ads (videos verticales con texto fijo estilo In
 ---
 Para cualquier pedido de ugly ad usá las herramientas `ugly_*` del MCP `ugly-ads` siguiendo el flujo de
 `/ugly-ads:crear`: primero `ugly_guide`, después contexto y copy aprobado por el usuario, y recién ahí
-`ugly_footage` → `ugly_inspect` → `ugly_preview` → `ugly_render`.
+`ugly_footage` → `ugly_scan` (cortar el clip donde está la acción) → `ugly_inspect` → `ugly_preview` →
+`ugly_render`.
 
 Para cambios sobre un ugly ad que ya existe, arrancá con `ugly_last` y cambiá solo lo pedido.
 Nunca inventes precios, fechas ni beneficios: sacalos del contexto del proyecto o preguntá.
